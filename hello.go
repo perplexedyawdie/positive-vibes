@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/xml"
+	"log"
 	"math/rand"
 	"net/http"
+	"os"
 )
 
 type TwiML struct {
@@ -14,7 +16,16 @@ type TwiML struct {
 
 func main() {
 	http.HandleFunc("/twiml", twiml)
-	http.ListenAndServe(":3000", nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	log.Printf("Listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func twiml(w http.ResponseWriter, r *http.Request) {
